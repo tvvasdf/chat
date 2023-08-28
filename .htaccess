@@ -1,0 +1,47 @@
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    RewriteCond %{REQUEST_URI} !/public
+#    RewriteRule ^(.*)$ site/page.php [L]
+#    RewriteCond %{REQUEST_URI} /public
+#    RewriteRule ^public/(.*)$ /$1 [L,R=301]
+#</IfModule>
+
+# This first part should be done by the webserver,
+# if not than thing about to change you hoster but I put it here:
+# Preventing direct access to any .ht file (.htaccess, .htpasswd, etc.)
+
+<FilesMatch "^\.ht">
+    Require all denied
+</FilesMatch>
+
+Options +FollowSymlinks
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # For all URL starting with /assets
+    RewriteCond %{REQUEST_URI} ^/?(assets)(/.*)?$ [NC]
+    RewriteRule ^.*$ /public/%1%2 [L]
+
+    # Redirect all to the Application if not done already
+    RewriteCond %{REQUEST_URI} !^/?public/index\.php [NC]
+    # but not if the URL starts with assets
+    RewriteCond %{REQUEST_URI} !^/?(assets)(/.*)?$ [NC]
+    # or if request is a real file
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # or if request is a real directory but not the root directory
+    RewriteCond %{REQUEST_URI} ^/?$ [OR]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Rewrite the rest to the index.php file in your public folder
+    RewriteRule ^.*$ /site/page.php [NC,L]
+    # Redirect from /public/index.php to /index.php
+    #
+    #
+     RewriteCond %{REQUEST_URI} ^/?public(/.*)?$ [NC]
+     RewriteCond %{REQUEST_URI} !^/?public/assets(/.*)?$ [NC]
+     RewriteRule ^public/(.*)$ / [L,R=301]
+    #
+    #s
+    RewriteCond %{REQUEST_URI} !/public
+    RewriteRule ^(.*)$ site/page.php [L]
+</IfModule>
