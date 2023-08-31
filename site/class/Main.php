@@ -1,5 +1,6 @@
 <?php
 
+namespace SITE;
 class Main
 {
 
@@ -9,7 +10,7 @@ class Main
 
     private static string $publicFolder = '';
     private static string $templateFolder = '';
-    private static string $pathError404 = '404.php';
+    private static string $pathError = 'error.php';
 
     private static array $pageProperties = [];
 
@@ -22,15 +23,15 @@ class Main
         }
         self::$publicFolder = $settings['folder']['public'];
         self::$templateFolder = $settings['folder']['template'];
-        self::$pathError404 = $settings['page_404'];
+        self::$pathError = $settings['error_page'];
 
     }
 
     public static function show404(bool $show404 = true): void
     {
-        if ($show404) {
+        if ($show404 && file_exists(self::getRoot('/') . self::$pathError)) {
             http_response_code(404);
-            require self::getPublicRoot('/') . self::$pathError404;
+            require self::getRoot('/') . self::$pathError;
         } else {
             echo 'Страница по пути ' . self::getPath() . ' не найдена! ';
         }
@@ -64,7 +65,7 @@ class Main
 
     public static function includeHeader(): void
     {
-        ob_start("Main::includeProperties");
+        ob_start("SITE\Main::includeProperties");
         require self::getRoot('/' . self::$templateFolder . '/header.php');
     }
 
@@ -157,7 +158,8 @@ class Main
         header('Location: ' . $url);
     }
 
-    private static function includeProperties(string $buffer) {
+    private static function includeProperties(string $buffer)
+    {
         return str_replace(array_keys(self::$pageProperties), array_values(self::$pageProperties), $buffer);
     }
 }

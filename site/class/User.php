@@ -1,6 +1,9 @@
 <?php
 
+namespace SITE;
+
 use Medoo\Medoo;
+
 class User
 {
     private const TABLE_NAME = 'users';
@@ -20,6 +23,7 @@ class User
             self::$passwordHash = $_COOKIE['password_hash'];
         }
     }
+
     public static function authorized(): bool
     {
         if (self::$login && self::$passwordHash) {
@@ -33,14 +37,14 @@ class User
                     'password_hash' => self::$passwordHash,
                 ]
             );
-            return (bool) $data;
+            return (bool)$data;
         }
         return false;
     }
 
     public static function login(string $login, string $password): bool
     {
-        $passwordHash = password_hash($password,  PASSWORD_DEFAULT);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $data = self::$db->select(
             self::TABLE_NAME,
             [
@@ -77,7 +81,7 @@ class User
             $result = self::$db->insert(
                 self::TABLE_NAME, [
                 'login' => $data['login'],
-                'password_hash' => password_hash($data['password'],  PASSWORD_DEFAULT),
+                'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'name' => $data['name'],
                 'access_rights' => 'E',
             ]);
@@ -116,7 +120,7 @@ class User
                 'login' => self::$login,
             ]
         );
-        return (int) $data[0]['id'];
+        return (int)$data[0]['id'];
     }
 
     public static function getName($id): string
@@ -130,7 +134,7 @@ class User
                 'id' => $id,
             ]
         );
-        return (int) $data[0]['name'];
+        return (int)$data[0]['name'];
     }
 
     public static function getLastError(): string

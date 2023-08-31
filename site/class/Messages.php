@@ -1,5 +1,7 @@
 <?php
 
+namespace SITE;
+
 use Medoo\Medoo;
 
 class Messages
@@ -7,6 +9,7 @@ class Messages
     private const TABLE_NAME = 'messages';
     private static Medoo $db;
     private static string $lastError = '';
+
     public static function init(array $data): void
     {
         self::$db = new Medoo($data);

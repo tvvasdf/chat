@@ -1,14 +1,20 @@
 <?php
 
+namespace SITE;
+
 use Medoo\Medoo;
+
 class Lobby
 {
     private const TABLE_NAME = 'lobby';
     private static Medoo $db;
     private static string $lastError = '';
-    public static function init(array $data) {
+
+    public static function init(array $data)
+    {
         self::$db = new Medoo($data);
     }
+
     public static function create(string $name, string $code, bool $public): bool
     {
         $users = serialize(
@@ -24,7 +30,7 @@ class Lobby
             'code' => $code,
             'public' => $public,
         ]);
-        return (bool) $result->rowCount();
+        return (bool)$result->rowCount();
     }
 
     public static function join($lobbyId): bool
@@ -191,7 +197,7 @@ class Lobby
 
     public static function getId($code): int
     {
-        return (int) self::$db->select(
+        return (int)self::$db->select(
             self::TABLE_NAME,
             [
                 'id',

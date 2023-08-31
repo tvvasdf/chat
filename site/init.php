@@ -1,11 +1,18 @@
 <?php
 
+use SITE\Lobby;
+use SITE\Main;
+use SITE\Messages;
+use SITE\User;
+
 $settings = require_once 'settings.php';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-spl_autoload_register(function ($class) {
-    require_once 'class/' . $class . '.php';
-});
+if ($settings['debug']) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
+
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
 Main::init($settings);
 User::init($settings['db_data']);

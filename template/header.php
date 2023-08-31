@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title><?php Main::showTitle(); ?></title>
+        <title><?php use SITE\Main;
+
+            Main::showTitle(); ?></title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="description" content="<?php Main::showProperty('description'); ?>">
-        <link href="/public/assets/css/layout.css" rel="stylesheet" type="text/css" media="all">
+        <link href="/template/assets/css/layout.css" rel="stylesheet" type="text/css" media="all">
         <!-- JAVASCRIPTS -->
-        <script defer="" src="/public/assets/js/jquery/jquery.min_old.js"></script>
-        <script defer="" src="/public/assets/js/jquery/jquery.backtotop.js"></script>
-        <script defer="" src="/public/assets/js/jquery/jquery.mobilemenu.js"></script>
+        <script defer="" src="/template/assets/js/jquery/jquery.min_old.js"></script>
+        <script defer="" src="/template/assets/js/jquery/jquery.backtotop.js"></script>
+        <script defer="" src="/template/assets/js/jquery/jquery.mobilemenu.js"></script>
         <!-- IE9 Placeholder Support -->
-        <script defer="" src="/public/assets/js/jquery/jquery.placeholder.min.js"></script>
+        <script defer="" src="/template/assets/js/jquery/jquery.placeholder.min.js"></script>
         <!-- / IE9 Placeholder Support -->
         <!-- Custom scripts -->
-        <script defer="" src="/public/assets/js/main.js"></script>
+        <script defer="" src="/template/assets/js/main.js"></script>
     </head>
     <body id="top">
         <div class="wrapper row1">

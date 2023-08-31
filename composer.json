@@ -1,5 +1,10 @@
 {
     "require": {
-        "catfan/medoo": "^2.1",
+        "catfan/medoo": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SITE\\": "site/class/"
+        }
     }
 }

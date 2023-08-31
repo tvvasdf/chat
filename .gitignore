@@ -1,4 +1,7 @@
 /vendor/
 /install_cms/
 /public/a/
+composer.phar
+/.idea/
+/pma/
 
