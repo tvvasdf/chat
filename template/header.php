@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title><?php use SITE\Main;
-
-            Main::showTitle(); ?></title>
+        <title><?php Main::showTitle(); ?></title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="description" content="<?php Main::showProperty('description'); ?>">

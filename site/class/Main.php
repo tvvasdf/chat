@@ -1,6 +1,5 @@
 <?php
 
-namespace SITE;
 class Main
 {
 
@@ -65,7 +64,7 @@ class Main
 
     public static function includeHeader(): void
     {
-        ob_start("SITE\Main::includeProperties");
+        ob_start("Main::includeProperties");
         require self::getRoot('/' . self::$templateFolder . '/header.php');
     }
 
@@ -151,6 +150,11 @@ class Main
     public static function getProperties(): array
     {
         return self::$pageProperties;
+    }
+
+    public static function clearBuffer(): void
+    {
+        ob_end_clean();
     }
 
     public static function redirect(string $url): void

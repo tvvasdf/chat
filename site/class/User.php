@@ -1,7 +1,5 @@
 <?php
 
-namespace SITE;
-
 use Medoo\Medoo;
 
 class User

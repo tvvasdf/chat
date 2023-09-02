@@ -1,8 +1,5 @@
 <?php
 
-use SITE\Main;
-use SITE\User;
-
 $menu = include Main::getRoot('/template/data/top_nav.php');
 ?>
 

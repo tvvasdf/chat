@@ -4,7 +4,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SITE\\": "site/class/"
+            "": "site/class/"
         }
     }
 }
