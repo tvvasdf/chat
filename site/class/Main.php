@@ -1,10 +1,7 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
-
 class Main
 {
-
     private static array $pagesExtensions = [
         'html', 'htm', 'php'
     ];
@@ -160,6 +157,9 @@ class Main
 
     public static function redirect(string $url): void
     {
+        if (headers_list()) {
+            self::clearBuffer();
+        }
         header('Location: ' . $url);
     }
 

@@ -4,9 +4,13 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
 $settings = require_once 'settings.php';
 
+$db = new Medoo\Medoo($settings['db_data']);
+
+session_start();
+
 Main::init($settings);
-User::init($settings['db_data']);
+User::$db = $db;
 if (User::authorized()) {
-    Lobby::init($settings['db_data']);
-    Messages::init($settings['db_data']);
+    Lobby::$db = $db;
+    Messages::$db = $db;
 }

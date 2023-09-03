@@ -8,11 +8,10 @@ if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_na
     switch ($_POST['form_name']) {
         case 'login':
             if (User::login($_POST['login'], $_POST['password'])) {
-                Main::sendJson([
-                    'success' => true,
-                ]);
+                Main::redirect('/');
             }
             break;
+
         case 'register':
             $data = [
                 'login' => $_POST['login'],
@@ -20,10 +19,9 @@ if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_na
                 'name' => isset($_POST['name']) ? : '',
             ];
             if (User::register($data)) {
-                Main::sendJson([
-                    'success' => true,
-                ]);
+                Main::redirect('/');
             }
+            break;
     }
     Main::sendJson([
         'success' => false,

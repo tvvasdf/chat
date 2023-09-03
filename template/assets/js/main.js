@@ -54,4 +54,30 @@ function main() {
         buttons.removeClass('active')
         obj.addClass('active')
     })
+
+    $(document).on('click', '[data-lobby-id]', function () {
+        const
+            obj = $(this),
+            id = obj.data('lobby-id');
+
+        $.ajax({
+            url: window.location.pathname,
+            method: 'get',
+            dataType: 'html',
+            data: {lobby_id: id},
+            success: function(r){
+                replace(r)
+            }
+        })
+
+    })
+}
+
+function replace(r) {
+    const replace = $('[data-replace]');
+
+    replace.each((index, element) => {
+        const data = $(element).data('replace');
+        $(element).replaceWith($(r).find(`[data-replace="${data}"]`))
+    })
 }
