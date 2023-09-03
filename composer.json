@@ -1,6 +1,7 @@
 {
     "require": {
-        "catfan/medoo": "^2.1"
+        "catfan/medoo": "^2.1",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

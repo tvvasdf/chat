@@ -1,8 +1,8 @@
 <?php
 
-$settings = require_once 'settings.php';
-
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+$settings = require_once 'settings.php';
 
 Main::init($settings);
 User::init($settings['db_data']);

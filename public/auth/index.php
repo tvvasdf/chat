@@ -4,10 +4,31 @@ if (User::authorized()) {
     Main::redirect('/chat/');
 }
 
-if (Main::getPostData()) {
-    Main::clearBuffer();
-    echo 1;
-    exit;
+if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_name'])) {
+    switch ($_POST['form_name']) {
+        case 'login':
+            if (User::login($_POST['login'], $_POST['password'])) {
+                Main::sendJson([
+                    'success' => true,
+                ]);
+            }
+            break;
+        case 'register':
+            $data = [
+                'login' => $_POST['login'],
+                'password' => $_POST['password'],
+                'name' => isset($_POST['name']) ? : '',
+            ];
+            if (User::register($data)) {
+                Main::sendJson([
+                    'success' => true,
+                ]);
+            }
+    }
+    Main::sendJson([
+        'success' => false,
+        'message' => User::getLastError() ? : 'Произошла ошибка'
+    ]);
 }
 
 Main::setTitle('Авторизация');

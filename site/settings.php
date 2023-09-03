@@ -7,7 +7,7 @@ return [
         'public' => 'public',
         'site' => 'site',
         'template' => 'template',
-        'vendor' => 'vendor',
+        'data' => 'data',
 //        'phpmyadmin' => 'pma',
     ],
     'db_data' => [

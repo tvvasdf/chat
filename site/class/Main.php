@@ -1,5 +1,7 @@
 <?php
 
+use JetBrains\PhpStorm\NoReturn;
+
 class Main
 {
 
@@ -9,6 +11,7 @@ class Main
 
     private static string $publicFolder = '';
     private static string $templateFolder = '';
+    private static string $dataFolder = '';
     private static string $pathError = 'error.php';
 
     private static array $pageProperties = [];
@@ -26,14 +29,10 @@ class Main
 
     }
 
-    public static function show404(bool $show404 = true): void
+    public static function showError(int $status): void
     {
-        if ($show404 && file_exists(self::getRoot('/') . self::$pathError)) {
-            http_response_code(404);
-            require self::getRoot('/') . self::$pathError;
-        } else {
-            echo 'Страница по пути ' . self::getPath() . ' не найдена! ';
-        }
+        http_response_code($status);
+        require self::getRoot('/') . self::$pathError;
     }
 
     public static function showTitle(): void
@@ -104,7 +103,11 @@ class Main
             }
         }
 
-        Main::show404($show404);
+        if ($show404 && file_exists(self::getRoot('/') . self::$pathError)) {
+            self::showError(404);
+        } else {
+            echo 'Страница по пути ' . self::getPath() . ' не найдена! ';
+        }
     }
 
     public static function getPath(): string
@@ -127,16 +130,6 @@ class Main
         return $_SERVER['REQUEST_URI'];
     }
 
-    public static function getPostData(): array
-    {
-        return $_POST;
-    }
-
-    public static function getQueryData(): array
-    {
-        return $_GET;
-    }
-
     public static function getRoot($additional = ''): string
     {
         return $_SERVER['DOCUMENT_ROOT'] . $additional;
@@ -157,12 +150,20 @@ class Main
         ob_end_clean();
     }
 
+    public static function sendJson(array $data): void
+    {
+        self::clearBuffer();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     public static function redirect(string $url): void
     {
         header('Location: ' . $url);
     }
 
-    private static function includeProperties(string $buffer)
+    private static function includeProperties(string $buffer): string
     {
         return str_replace(array_keys(self::$pageProperties), array_values(self::$pageProperties), $buffer);
     }
