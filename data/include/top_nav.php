@@ -6,13 +6,13 @@ return [
         'url' => '/',
     ],
     [
-        'name' => 'Чаты',
-        'url' => '/chat/',
-        'auth' => true,
+        'name' => 'Авторизация',
+        'url' => '/auth/',
+        'auth' => false,
     ],
     [
-        'name' => 'Выход',
-        'url' => '?logout=Y',
+        'name' => 'Чаты',
+        'url' => '/chat/',
         'auth' => true,
     ],
     [
@@ -22,8 +22,8 @@ return [
         'access' => 3
     ],
     [
-        'name' => 'Авторизация',
-        'url' => '/auth/',
-        'auth' => false,
+        'name' => 'Выход',
+        'url' => '?logout=Y',
+        'auth' => true,
     ],
 ];

@@ -24,22 +24,17 @@ function forms() {
             dataType: 'json',
             data: data,
             success: function(r){
-                switch (r) {
-                    case this.success:
-                        form.reset()
-                        break
-
-                    case this.message:
-                        alert(this.message)
-                        break
-
-                    case this.modal:
-                        //open modal this.modal
-                        break
-
-                    case this.redirect:
-                        window.location.href = r.redirect
-                        break
+                if (r.success) {
+                    document.querySelector(`[data-form=${form}]`).reset()
+                }
+                if (r.message) {
+                    alert(r.message)
+                }
+                if (r.modal) {
+                    //open modal r.modal
+                }
+                if (r.redirect) {
+                    window.location.href = r.redirect
                 }
             }
         })
@@ -84,6 +79,7 @@ function main() {
     $(document).on('click', '[data-lobby-id]', function () {
         const
             obj = $(this),
+            buttons = $('[data-lobby-id]'),
             id = obj.data('lobby-id');
 
         $.ajax({
@@ -93,6 +89,10 @@ function main() {
             data: {lobby_id: id},
             success: function(r){
                 replace(r)
+                buttons.each((index, button) => {
+                    $(button).removeClass('active')
+                })
+                obj.addClass('active')
             }
         })
 

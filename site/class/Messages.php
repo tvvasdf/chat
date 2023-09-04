@@ -107,6 +107,7 @@ class Messages
                 `author_name` VARCHAR(255) NOT NULL , 
                 `text` MEDIUMTEXT NOT NULL , 
                 `is_pinned` BOOLEAN NOT NULL , 
+                `date` DATETIME NOT NULL ,
                 PRIMARY KEY (`id`)) ENGINE = InnoDB; '
         );
     }

@@ -1,6 +1,6 @@
 <?php
 
-if (User::authorized()) {
+if (User::authorized() && !$_POST) {
     Main::redirect('/chat/');
 }
 

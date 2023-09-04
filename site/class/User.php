@@ -43,10 +43,6 @@ class User
                 'access' => $result['privileges'],
             ];
             $this->authorized = true;
-            $_SESSION['user'] = [
-                'login' => $result['login'],
-                //'password' => $password,
-            ];
         }
     }
 
@@ -95,11 +91,6 @@ class User
         }
     }
 
-    public static function getUser(): User
-    {
-        return new User($_SESSION['user']['login']);
-    }
-
     public static function logout(): void
     {
         unset($_SESSION['user']);
@@ -129,16 +120,7 @@ class User
 
     public static function register(array $data): bool
     {
-        $result = self::$db->select(
-            self::TABLE_NAME,
-            [
-                'login',
-            ],
-            [
-                'login' => $data['login'],
-            ]
-        );
-        if ($result) {
+        if (User::exists(false, $data['login'])) {
             self::$lastError = 'Такой пользователь уже существует';
             return false;
         } else {
@@ -157,6 +139,33 @@ class User
             }
         }
 
+    }
+
+    public static function exists($id = false, string $login = ''): bool
+    {
+        if (!$id && !$login) return false;
+        if ($id) {
+            $result = self::$db->select(
+                self::TABLE_NAME,
+                [
+                    'id',
+                ],
+                [
+                    'id' => $id,
+                ]
+            );
+            return (bool) $result;
+        }
+        $result = self::$db->select(
+            self::TABLE_NAME,
+            [
+                'login',
+            ],
+            [
+                'login' => $login,
+            ]
+        );
+        return (bool) $result;
     }
 
     public static function getLastError(): string

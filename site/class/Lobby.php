@@ -10,22 +10,21 @@ class Lobby
     private static string $lastError = '';
 
 
-    public static function create(string $name, string $code, bool $public, User $user): bool
+    public static function create(array $fields): bool
     {
-        $users = serialize(
-            [
-                $user->getId()
-            ]
-        );
-        $result = self::$db->insert(
-            self::TABLE_NAME, [
-            'serialized_admins_id' => $users,
-            'serialized_users_id' => $users,
-            'name' => $name,
-            'code' => $code,
-            'public' => $public,
-        ]);
-        return (bool) $result->rowCount();
+        if (is_numeric($fields['code'])) {
+            self::$lastError = 'Символьный код не может содержать только цифры';
+            return false;
+        }
+        if (isset($fields['id'])) {
+            unset($fields['id']);
+        }
+        if (!Lobby::exists(false, $fields['code'])) {
+            $result = self::$db->insert(self::TABLE_NAME, $fields);
+            return (bool) $result->rowCount();
+        }
+        self::$lastError = 'Лобби с таким символьным кодом уже существует';
+        return false;
     }
 
     public static function join(int $lobbyId, User $user): bool
@@ -78,7 +77,7 @@ class Lobby
                 'id' => $lobbyId
             ]
         )[0];
-        $users = unserialize($result['users_id']);
+        $users = unserialize($result['serialized_users_id']);
         if (in_array($userId, $users)) {
             unset($users[array_search($userId, $users)]);
             $result = self::$db->update(
@@ -194,6 +193,32 @@ class Lobby
         )[0]['id'];
     }
 
+    public static function exists($id = false, string $code = ''): bool
+    {
+        if (!$id && !$code) return false;
+
+        if ($id) {
+            return (bool) self::$db->select(
+                self::TABLE_NAME,
+                [
+                    'id',
+                ],
+                [
+                    'id' => $id
+                ]
+            );
+        }
+        return (bool) self::$db->select(
+            self::TABLE_NAME,
+            [
+                'id',
+            ],
+            [
+                'code' => $code
+            ]
+        );
+    }
+
     public static function getUserLobbies(User $user, bool $admin = false, $filter = []): array
     {
         $result = self::$db->select(
@@ -203,7 +228,9 @@ class Lobby
                 'name',
                 'code',
                 'serialized_users_id',
-                'serialized_admins_id'
+                'serialized_admins_id',
+                'serialized_invited_id',
+                'serialized_banned_id'
             ],
             $filter
         );
@@ -235,6 +262,7 @@ class Lobby
                 `code` VARCHAR(255) NOT NULL , 
                 `public` BOOLEAN NOT NULL , 
                 `serialized_users_id` TEXT NOT NULL , 
+                `serialized_invited_id` TEXT NOT NULL ,
                 `serialized_admins_id` TEXT NOT NULL , 
                 `serialized_banned_id` TEXT NOT NULL , 
                 PRIMARY KEY (`id`), UNIQUE (`code`)) ENGINE = InnoDB; 
