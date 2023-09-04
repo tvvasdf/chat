@@ -8,7 +8,7 @@ return [
         'site' => 'site',
         'template' => 'template',
         'data' => 'data',
-//        'phpmyadmin' => 'pma',
+        'phpmyadmin' => 'pma',
     ],
     'db_data' => [
         'type' => 'mysql',

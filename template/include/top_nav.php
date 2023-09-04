@@ -1,10 +1,19 @@
 <?php
 
-$menu = include Main::getRoot('/template/data/top_nav.php');
+global $user;
+$menu = Main::includeData('/include/top_nav.php');
 ?>
 
 <?php foreach ($menu as $link): ?>
-    <?php if (isset($link['auth']) && $link['auth'] != User::authorized()) continue ?>
+    <?php
+
+        if (isset($link['auth']) && $link['auth'] != (bool) $user) {
+            continue;
+        }
+        if (isset($link['access']) && (!$user || $user->getAccess() < $link['access'])) {
+            continue;
+        }
+    ?>
     <?php if ($link['url'] == Main::getPath()): ?>
         <li class="active"><a><?= $link['name'] ?></a></li>
     <?php else: ?>

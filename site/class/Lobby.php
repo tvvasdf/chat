@@ -194,7 +194,7 @@ class Lobby
         )[0]['id'];
     }
 
-    public static function getUserLobbies(User $user): array
+    public static function getUserLobbies(User $user, bool $admin = false, $filter = []): array
     {
         $result = self::$db->select(
             self::TABLE_NAME,
@@ -202,12 +202,18 @@ class Lobby
                 'id',
                 'name',
                 'code',
-                'serialized_users_id'
-            ]
+                'serialized_users_id',
+                'serialized_admins_id'
+            ],
+            $filter
         );
 
         foreach ($result as $key => $lobby) {
             if (!in_array($user->getId(), unserialize($lobby['serialized_users_id']))) {
+                unset($result[$key]);
+            }
+
+            if ($admin && !in_array($user->getId(), unserialize($lobby['serialized_admins_id']))) {
                 unset($result[$key]);
             }
         }

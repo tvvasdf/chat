@@ -24,10 +24,22 @@ function forms() {
             dataType: 'json',
             data: data,
             success: function(r){
-                if (r.success) {
+                switch (r) {
+                    case this.success:
+                        form.reset()
+                        break
 
-                } else {
-                    alert(r.message)
+                    case this.message:
+                        alert(this.message)
+                        break
+
+                    case this.modal:
+                        //open modal this.modal
+                        break
+
+                    case this.redirect:
+                        window.location.href = r.redirect
+                        break
                 }
             }
         })
@@ -53,6 +65,20 @@ function main() {
         show.removeAttr('hidden')
         buttons.removeClass('active')
         obj.addClass('active')
+    })
+
+    $(document).on('click', '[data-append-button]', function () {
+        const
+            obj = $(this),
+            selector = obj.data('append-button'),
+            container = $(`[data-append-container="${selector}"]`),
+            elements = container.find(`[data-append-element="${selector}"]`);
+        if (typeof elements[0] !== undefined) {
+            const element = $(elements[0]).clone()
+            element.attr('id',  selector + (elements.length + 1))
+            element.val('')
+            element.appendTo(container)
+        }
     })
 
     $(document).on('click', '[data-lobby-id]', function () {

@@ -8,18 +8,30 @@ if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_na
     switch ($_POST['form_name']) {
         case 'login':
             if (User::login($_POST['login'], $_POST['password'])) {
-                Main::redirect('/');
+                Main::sendJson([
+                    'success' => true,
+                    'redirect' => '/',
+                ]);
             }
             break;
 
         case 'register':
+            if ($_POST['password'] != $_POST['password_confirm']) {
+                Main::sendJson([
+                    'success' => false,
+                    'message' => 'Пароли не совпадают'
+                ]);
+            }
             $data = [
                 'login' => $_POST['login'],
                 'password' => $_POST['password'],
                 'name' => isset($_POST['name']) ? : '',
             ];
             if (User::register($data)) {
-                Main::redirect('/');
+                Main::sendJson([
+                    'success' => true,
+                    'redirect' => '/',
+                ]);
             }
             break;
     }

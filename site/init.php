@@ -10,7 +10,12 @@ session_start();
 
 Main::init($settings);
 User::$db = $db;
-if (User::authorized()) {
+if ($user = User::authorized()) {
     Lobby::$db = $db;
     Messages::$db = $db;
+}
+
+if (isset($_GET['logout']) && $_GET['logout'] == 'Y' && $user) {
+    User::logout();
+    Main::redirect('/');
 }

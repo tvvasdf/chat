@@ -22,6 +22,7 @@ class Main
         }
         self::$publicFolder = $settings['folder']['public'];
         self::$templateFolder = $settings['folder']['template'];
+        self::$dataFolder = $settings['folder']['data'];
         self::$pathError = $settings['error_page'];
 
     }
@@ -77,6 +78,19 @@ class Main
         }
     }
 
+    public static function includeData($path): mixed
+    {
+        if (file_exists(self::getRoot('/' . self::$dataFolder . $path))) {
+            $data = include self::getRoot('/' . self::$dataFolder . $path);
+            if ($data) {
+                return $data;
+            } else {
+                include self::getRoot('/' . self::$dataFolder . $path);
+            }
+        }
+        return false;
+    }
+
     public static function includePage(string $path = '', bool $show404 = true): void
     {
         if (!$path) {
@@ -111,6 +125,14 @@ class Main
     {
         $path = explode('?', $_SERVER['REQUEST_URI']);
         return $path[array_key_first($path)];
+    }
+
+    public static function getPageCode(): string
+    {
+        if ($path = self::getPathArray()) {
+            return $path[array_key_last($path)];
+        }
+        return '';
     }
 
     public static function getPathArray(string $path = ''): array

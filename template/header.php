@@ -20,9 +20,9 @@
         <div class="wrapper row1">
             <header id="header" class="hoc clear">
                 <div id="logo" class="fl_left">
-                    <h1><a <?php if (Main::getPath() != '/'): ?>href="/"<?php endif; ?>><?php Main::includeTemplateFile('/data/site_name.php');?></a></h1>
+                    <h1><a <?php if (Main::getPath() != '/'): ?>href="/"<?php endif; ?>><?php Main::includeData('/include/site_name.php');?></a></h1>
                     <i class="fa fa-brands fa-codepen"></i>
-                    <p><?php Main::includeTemplateFile('/data/motto.php');?></p>
+                    <p><?php Main::includeData('/include/motto.php');?></p>
                 </div>
                 <nav id="mainav" class="fl_right">
                     <ul class="clear">
@@ -35,3 +35,6 @@
         <div class="wrapper row0">
             <main class="hoc container clear">
                 <!-- main body -->
+                <?php if (Main::getPageCode() != 'auth'): ?>
+                    <h2 class="heading"><?php Main::showTitle(); ?></h2>
+                <?php endif; ?>

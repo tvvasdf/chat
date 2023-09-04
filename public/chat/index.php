@@ -12,8 +12,6 @@ if (isset($_GET['lobby_id'])) {
 }
 
 ?>
-<h2 class="heading"><?php Main::showTitle(); ?></h2>
-
 <div class="group" data-replace="messages">
     <div class="one_third first">
         <?php foreach ($lobbies as $lobby): ?>

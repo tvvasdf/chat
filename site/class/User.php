@@ -10,8 +10,9 @@ class User
         'id' => 0,
         'login' => '',
         'name' => '',
+        'access' => 0,
     ];
-    private bool $authorized = false;
+    public bool $authorized;
     private static string $lastError = '';
     public static Medoo $db;
 
@@ -23,23 +24,30 @@ class User
                 'id',
                 'login',
                 'name',
-                'password_hash'
+                'privileges',
+                'password_hash',
             ],
             [
                 'login' => $login
             ]
-        )[0];
+        );
 
-        $this->userData = [
-            'id' => $result['id'],
-            'login' => $result['login'],
-            'name' => $result['name'],
-        ];
-        $this->authorized = true;
-        $_SESSION['user'] = [
-            'login' => $result['login'],
-            //'password' => $password,
-        ];
+        if (!$result) {
+            $this->authorized = false;
+        } else {
+            $result = $result[array_key_first($result)];
+            $this->userData = [
+                'id' => $result['id'],
+                'login' => $result['login'],
+                'name' => $result['name'],
+                'access' => $result['privileges'],
+            ];
+            $this->authorized = true;
+            $_SESSION['user'] = [
+                'login' => $result['login'],
+                //'password' => $password,
+            ];
+        }
     }
 
     public function getId(): int
@@ -57,6 +65,11 @@ class User
         return $this->userData['login'];
     }
 
+    public function getAccess(): string
+    {
+        return $this->userData['access'];
+    }
+
     public function changeFields(array $fields): bool
     {
         $result = self::$db->update(
@@ -72,11 +85,11 @@ class User
         return (bool) $result;
     }
 
-    public static function authorized(): bool
+    public static function authorized(): User|bool
     {
         if (isset($_SESSION['user'])) {
             $user = new User($_SESSION['user']['login']);
-            return $user->authorized;
+            return $user->authorized ? $user : false;
         } else {
             return false;
         }
@@ -85,6 +98,11 @@ class User
     public static function getUser(): User
     {
         return new User($_SESSION['user']['login']);
+    }
+
+    public static function logout(): void
+    {
+        unset($_SESSION['user']);
     }
 
     public static function login(string $login, string $password): bool
