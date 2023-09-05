@@ -253,7 +253,8 @@ input:focus, textarea:focus, *:required:focus{border-color:#DFA94F;}
 #footer .linklist li{border-color:#414141;}
 
 input, button{border-color:transparent;}
-input{color:#FFFFFF; background-color:#414141;}
+input, textarea{color:#FFFFFF; background-color:#414141;}
+textarea{border-color: #414141}
 input:focus{border-color:#DFA94F;}
 button{color:#FFFFFF; background-color:#DFA94F;}
 

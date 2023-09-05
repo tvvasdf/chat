@@ -15,7 +15,7 @@ if ($_POST) {
 
 Main::setTitle('Панель управления');
 ?>
-
+<h2 class="heading"><?php Main::showTitle(); ?></h2>
 
 <button class="btn btmspace-10 active" data-show-button="create-chat">Создать чат</button>
 <button class="btn btmspace-10" data-show-button="edit-chats">Редактировать чаты</button>

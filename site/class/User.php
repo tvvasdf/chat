@@ -6,6 +6,14 @@ class User
 {
     private const DB_NAME = 'socnet';
     private const TABLE_NAME = 'users';
+
+    public const USER = 1;
+    public const VERIFIED_USER = 2;
+    public const MODERATOR = 3;
+    public const EDITOR = 4;
+    public const ADMIN = 5;
+    public const CREATOR = 6;
+
     private array $userData = [
         'id' => 0,
         'login' => '',
@@ -61,9 +69,13 @@ class User
         return $this->userData['login'];
     }
 
-    public function getAccess(): string
+    public function getAccess($access = 0): int|bool
     {
-        return $this->userData['access'];
+        if (!$access) {
+            return (int) $this->userData['access'];
+        } else {
+            return (int) $this->userData['access'] >= $access;
+        }
     }
 
     public function changeFields(array $fields): bool

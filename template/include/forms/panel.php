@@ -39,6 +39,12 @@ function getFields($userId): array {
 }
 
 global $user;
+if (!$user->getAccess(User::EDITOR)) {
+    Main::sendJson([
+        'success' => false,
+        'message' => 'Недостаточно прав',
+    ]);
+}
 $result = false;
 $fields = getFields($user->getId());
 

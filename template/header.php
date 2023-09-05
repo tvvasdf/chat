@@ -35,6 +35,3 @@
         <div class="wrapper row0">
             <main class="hoc container clear">
                 <!-- main body -->
-                <?php if (Main::getPageCode() != 'auth'): ?>
-                    <h2 class="heading"><?php Main::showTitle(); ?></h2>
-                <?php endif; ?>

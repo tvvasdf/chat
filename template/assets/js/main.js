@@ -1,6 +1,7 @@
 $(() => {
     forms()
     main()
+    chat()
 })
 
 function forms() {
@@ -75,7 +76,9 @@ function main() {
             element.appendTo(container)
         }
     })
+}
 
+function chat() {
     $(document).on('click', '[data-lobby-id]', function () {
         const
             obj = $(this),
@@ -97,6 +100,42 @@ function main() {
         })
 
     })
+
+    $('textarea#message')
+        .on('input', function(){
+            const
+                defaultHeight = 42,
+                defaultScroll = 51,
+                maxHeight = 144,
+                scrollHeight = this.scrollHeight
+
+            if (scrollHeight < maxHeight) {
+                this.style.overflowY = 'hidden'
+                if (defaultHeight < scrollHeight && defaultScroll !== scrollHeight) {
+                    this.style.height = this.scrollHeight + 'px'
+                } else {
+                    this.style.height = defaultHeight + 'px'
+                }
+            } else {
+                this.style.height = maxHeight + 'px'
+                this.style.overflowY = 'auto'
+            }
+        })
+        .keydown(function (key) {
+            const
+                form = $(this).closest('form'),
+                ENTER = 13,
+                defaultHeight = 42
+            let keyCode = key.keyCode || key.which
+            if (keyCode !== ENTER) return;
+            if (!key.shiftKey) {
+                key.preventDefault()
+                form.submit()
+                form.trigger('reset')
+                this.style.height = defaultHeight + 'px'
+                this.style.overflowY = 'hidden'
+            }
+        })
 }
 
 function replace(r) {
