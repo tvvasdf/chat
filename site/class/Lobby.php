@@ -9,11 +9,163 @@ class Lobby
     public static Medoo $db;
     private static string $lastError = '';
 
+    private int $id;
+    private string $code;
+    private string $name;
+    private bool $public;
+    private array $invited;
+    private array $banned;
+    private array $admins;
+    private array $users;
+
+    public function __construct(string $code, int $id = 0)
+    {
+        if ($id) {
+            $where = ['id' => $id];
+        } else {
+            $where = ['code' => $code];
+        }
+
+        $result = self::$db->select(
+            self::TABLE_NAME,
+            [
+                'id',
+                'name',
+                'code',
+                'public',
+                'serialized_users_id',
+                'serialized_admins_id',
+                'serialized_invited_id',
+                'serialized_banned_id'
+            ],
+            $where
+        )[0];
+
+        $this->id = $result['id'];
+        $this->name = $result['name'];
+        $this->public = (bool) $result['public'];
+        $this->code = $result['code'];
+        $this->users = unserialize($result['serialized_users_id']);
+        $this->admins = unserialize($result['serialized_admins_id']);
+        $this->banned = unserialize($result['serialized_banned_id']);
+        $this->invited = unserialize($result['serialized_invited_id']);
+    }
+
+    public function add(User $user): bool
+    {
+        if ($this->public || $invitedKey = array_search($user->getId(), $this->invited)) {
+            $users = $this->users;
+            $users[] = $user->getId();
+            if (isset($invited) && isset($invitedKey)) {
+                unset($invited[$invitedKey]);
+            }
+            $result = self::$db->update(
+                self::TABLE_NAME,
+                [
+                    'serialized_users_id' => serialize($users),
+                    'serialized_invited_id' => isset($invited) ? serialize($invited) : serialize($this->invited)
+                ],
+                [
+                    'id' => $this->id,
+                ]
+            );
+            if (!$result) {
+                self::$lastError = self::$db->error;
+            }
+        } else {
+            self::$lastError = 'Лобби не публичное. Попросите администраторов пригласить вас.';
+            return false;
+        }
+        return (bool) $result;
+    }
+
+    public function kick(User $user): bool
+    {
+        if (in_array($user->getId(), $this->users)) {
+            unset($this->users[array_search($user->getId(), $this->users)]);
+            $result = self::$db->update(
+                self::TABLE_NAME,
+                [
+                    'serialized_users_id' => serialize($this->users),
+                ],
+                [
+                    'id' => $this->id,
+                ]
+            );
+            if (!$result) {
+                self::$lastError = self::$db->error;
+            }
+            return (bool) $result;
+        }
+        return false;
+    }
+
+    public function ban(User $user): bool
+    {
+        $this->kick($user);
+
+        if (!in_array($user->getId(), $this->banned)) {
+            $this->banned[] = $user->getId();
+            $result = self::$db->update(
+                self::TABLE_NAME,
+                [
+                    'serialized_banned_id' => serialize($this->banned),
+                ],
+                [
+                    'id' => $this->id,
+                ]
+            );
+            if ($result) {
+                return true;
+            } else {
+                self::$lastError = self::$db->error;
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    public function unban(User $user): bool
+    {
+        if (in_array($user->getId(), $this->banned)) {
+            unset($this->banned[array_search($user->getId(), $this->banned)]);
+            $result = self::$db->update(
+                self::TABLE_NAME,
+                [
+                    'serialized_banned_id' => serialize($this->banned),
+                ],
+                [
+                    'id' => $this->id,
+                ]
+            );
+            if ($result) {
+                return true;
+            } else {
+                self::$lastError = self::$db->error;
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
 
     public static function create(array $fields): bool
     {
         if (is_numeric($fields['code'])) {
             self::$lastError = 'Символьный код не может содержать только цифры';
+            return false;
+        }
+        if (trim($fields['code'])) {
+            self::$lastError = 'Символьный код не содержит символов';
+            return false;
+        }
+        if (strlen(trim($fields['code'])) < 3) {
+            self::$lastError = 'Символьный код может содержать минимум 4 символа';
+            return false;
+        }
+        if (strlen(trim($fields['code'])) > 16) {
+            self::$lastError = 'Символьный код может содержать максимум 16 символов';
             return false;
         }
         if (isset($fields['id'])) {
@@ -27,196 +179,47 @@ class Lobby
         return false;
     }
 
-    public static function join(int $lobbyId, User $user): bool
+    public static function exists($id = false, $code = ''): bool
     {
-        $result = self::$db->select(
-            self::TABLE_NAME,
-            [
-                'id',
-                'public',
-                'serialized_users_id',
-                'serialized_invited_id'
-            ],
-            [
-                'id' => $lobbyId
-            ]
-        )[0];
-        if ($result['public'] || $invitedKey = array_search($user->getId(), $invited = unserialize($result['serialized_invited_id']))) {
-            $users = unserialize($result['serialized_users_id']);
-            $users[] = $user->getId();
-            if (isset($invited) && isset($invitedKey)) {
-                unset($invited[$invitedKey]);
-            }
-            $result = self::$db->update(
+        if (!$id && !$code) {
+            return false;
+        }
+        if ($id) {
+            $result = self::$db->select(
                 self::TABLE_NAME,
                 [
-                    'serialized_users_id' => serialize($users),
-                    'serialized_invited_id' => isset($invited) ? serialize($invited) : $result['serialized_invited_id']
+                    'id',
                 ],
                 [
-                    'id' => $lobbyId,
+                    'id' => $id,
                 ]
             );
-            if (!$result) {
-                self::$lastError = self::$db->error;
-            }
         } else {
-            self::$lastError = 'Лобби не публичное. Попросите администраторов пригласить вас.';
+            $result = self::$db->select(
+                self::TABLE_NAME,
+                [
+                    'id',
+                ],
+                [
+                    'code' => $code,
+                ]
+            );
         }
         return (bool) $result;
     }
 
-    public static function kick($lobbyId, $userId): bool
-    {
-        $result = self::$db->select(
-            self::TABLE_NAME,
-            [
-                'serialized_users_id',
-            ],
-            [
-                'id' => $lobbyId
-            ]
-        )[0];
-        $users = unserialize($result['serialized_users_id']);
-        if (in_array($userId, $users)) {
-            unset($users[array_search($userId, $users)]);
-            $result = self::$db->update(
-                self::TABLE_NAME,
-                [
-                    'serialized_users_id' => serialize($users),
-                ],
-                [
-                    'id' => $lobbyId,
-                ]
-            );
-            if (!$result) {
-                self::$lastError = self::$db->error;
-            }
-        }
-        return (bool) $result;
-    }
-
-    public static function ban($lobbyId, $userId): bool
-    {
-        self::kick($lobbyId, $userId);
-
-        $result = self::$db->select(
-            self::TABLE_NAME,
-            [
-                'serialized_banned_id',
-            ],
-            [
-                'id' => $lobbyId
-            ]
-        )[0];
-        $banned = unserialize($result['serialized_banned_id']);
-        if (!in_array($userId, $banned)) {
-            $banned[] = $userId;
-            $result = self::$db->update(
-                self::TABLE_NAME,
-                [
-                    'serialized_banned_id' => serialize($banned),
-                ],
-                [
-                    'id' => $lobbyId,
-                ]
-            );
-            if ($result) {
-                return true;
-            } else {
-                self::$lastError = self::$db->error;
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    public static function unban($lobbyId, $userId): bool
-    {
-        $result = self::$db->select(
-            self::TABLE_NAME,
-            [
-                'serialized_banned_id',
-            ],
-            [
-                'id' => $lobbyId
-            ]
-        )[0];
-        $banned = unserialize($result['serialized_banned_id']);
-        if (in_array($userId, $banned)) {
-            unset($banned[array_search($userId, $banned)]);
-            $result = self::$db->update(
-                self::TABLE_NAME,
-                [
-                    'serialized_banned_id' => serialize($banned),
-                ],
-                [
-                    'id' => $lobbyId,
-                ]
-            );
-            if ($result) {
-                return true;
-            } else {
-                self::$lastError = self::$db->error;
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    public static function erase($lobbyId): bool
+    public static function erase($id): bool
     {
         $result = self::$db->delete(
             self::TABLE_NAME,
             [
-                'id' => $lobbyId
+                'id' => $id
             ]
         );
         if (!$result) {
             self::$lastError = self::$db->error;
         }
         return (bool) $result;
-    }
-
-    public static function getId($code): int
-    {
-        return (int)self::$db->select(
-            self::TABLE_NAME,
-            [
-                'id',
-            ],
-            [
-                'code' => $code
-            ]
-        )[0]['id'];
-    }
-
-    public static function exists($id = false, string $code = ''): bool
-    {
-        if (!$id && !$code) return false;
-
-        if ($id) {
-            return (bool) self::$db->select(
-                self::TABLE_NAME,
-                [
-                    'id',
-                ],
-                [
-                    'id' => $id
-                ]
-            );
-        }
-        return (bool) self::$db->select(
-            self::TABLE_NAME,
-            [
-                'id',
-            ],
-            [
-                'code' => $code
-            ]
-        );
     }
 
     public static function getUserLobbies(User $user, bool $admin = false, $filter = []): array
