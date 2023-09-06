@@ -22,10 +22,35 @@ if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_na
                     'message' => 'Пароли не совпадают'
                 ]);
             }
+            if (preg_match('/[А-Яа-яЁё]/u', $_POST['login'])) {
+                Main::sendJson([
+                    'success' => false,
+                    'message' => 'Логин содержит кириллицу'
+                ]);
+            }
+            if (is_numeric($_POST['login'])) {
+                Main::sendJson([
+                    'success' => false,
+                    'message' => 'Логин содержит только цифры'
+                ]);
+            }
+            if (!trim($_POST['login'])) {
+                Main::sendJson([
+                    'success' => false,
+                    'message' => 'Поле "Логин" не содержит символов'
+                ]);
+            }
+            if (strlen($_POST['password']) <= 6) {
+                Main::sendJson([
+                    'success' => false,
+                    'message' => 'Минимальное количество символов в пароле - 6'
+                ]);
+            }
+            $name = $_POST['name'] ? trim($_POST['name']) : '';
             $data = [
-                'login' => $_POST['login'],
+                'login' => trim($_POST['login']),
                 'password' => $_POST['password'],
-                'name' => isset($_POST['name']) ? : '',
+                'name' => $name ?? '',
             ];
             if (User::register($data)) {
                 Main::sendJson([
@@ -33,6 +58,7 @@ if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['form_na
                     'redirect' => '/',
                 ]);
             }
+
             break;
     }
     Main::sendJson([

@@ -69,7 +69,8 @@ class Messages
                 'author_name',
                 'author_login',
                 'text',
-                'is_pinned'
+                'is_pinned',
+                'date'
             ],
             [
                 'lobby_id' => $lobbyId,

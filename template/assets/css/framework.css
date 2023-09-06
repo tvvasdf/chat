@@ -73,6 +73,9 @@ input.checkbox{display: inline-block; width: auto}
 div.form_block{margin: 3em}
 
 div.messages_block{
+    border: solid 1px;
+    resize: both;
+    overflow: auto;
     background-color: #222;
     padding: 2em;
 }
@@ -104,6 +107,12 @@ div.messages_form button{
     width: 3em;
     height: 3em;
     padding: 0;
+}
+
+div.messages_list{
+    max-height: 50vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 button.auth_change {width: 100%; border: solid 1px}
