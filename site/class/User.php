@@ -41,7 +41,8 @@ class User
         );
 
         if (!$result) {
-            $this->authorized = false;
+            self::$lastError = 'Такого пользователя не существует';
+            return;
         } else {
             $result = $result[array_key_first($result)];
             $this->userData = [

@@ -100,6 +100,34 @@ class Lobby
         return false;
     }
 
+    public function invite(User $user): bool
+    {
+        if (in_array($user->getId(), $this->users)) {
+            self::$lastError = 'Пользователь уже является участником чата';
+            return false;
+        }
+        if (!in_array($user->getId(), $this->invited)) {
+            $this->invited[] = $user->getId();
+            $result = self::$db->update(
+                self::TABLE_NAME,
+                [
+                    'serialized_invited_id' => serialize($this->invited),
+                ],
+                [
+                    'id' => $this->id,
+                ]
+            );
+            if ($result) {
+                return true;
+            } else {
+                self::$lastError = self::$db->error;
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
     public function ban(User $user): bool
     {
         $this->kick($user);
@@ -154,10 +182,6 @@ class Lobby
     {
         if (is_numeric($fields['code'])) {
             self::$lastError = 'Символьный код не может содержать только цифры';
-            return false;
-        }
-        if (trim($fields['code'])) {
-            self::$lastError = 'Символьный код не содержит символов';
             return false;
         }
         if (strlen(trim($fields['code'])) < 3) {
