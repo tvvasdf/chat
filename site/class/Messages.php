@@ -19,6 +19,7 @@ class Messages
                 'author_id' => $user->getId(),
                 'author_name' => $user->getName(),
                 'author_login' => $user->getLogin(),
+                'date' => date('Y-m-d H:i:s'),
             ]
         );
         if (!$result) {
@@ -60,9 +61,13 @@ class Messages
         return (bool) $result;
     }
 
-    public static function getAllMessages(int $lobbyId): array
+    public static function getAllMessages(int $lobbyId = 0, bool $formatDate = true): array
     {
-        return self::$db->select(
+        $where['ORDER'] = 'date';
+        if ($lobbyId) {
+            $where['lobby_id'] = $lobbyId;
+        }
+        $result = self::$db->select(
             self::TABLE_NAME,
             [
                 'id',
@@ -70,12 +75,20 @@ class Messages
                 'author_login',
                 'text',
                 'is_pinned',
-                'date'
+                'date',
+                'lobby_id'
             ],
-            [
-                'lobby_id' => $lobbyId,
-            ]
+            $where
         );
+
+        foreach ($result as $key => $item) {
+            if ($formatDate) {
+                $result[$key]['date'] = self::formatDate($item['date']);
+            }
+            $result[$key]['text'] = str_replace(PHP_EOL, '<br>', $item['text']);
+        }
+
+        return $result;
     }
 
     public static function deleteAllMessages($lobbyId): bool
@@ -111,5 +124,29 @@ class Messages
                 `date` DATETIME NOT NULL ,
                 PRIMARY KEY (`id`)) ENGINE = InnoDB; '
         );
+    }
+
+    private static function formatDate(string $date): string
+    {
+        $months = [
+            'января', 'февраля', 'марта', 'апреля',
+            'мая', 'июня', 'июля', 'августа',
+            'сентября', 'октября', 'ноября', 'декабря',
+        ];
+
+        $current = date_create();
+        $date = date_create($date);
+        $interval = date_diff($current, $date);
+        $message = match ($interval->days) {
+            0 => 'Сегодня в',
+            1 => 'Вчера в',
+            2 => 'Позавчера в',
+            default => $date->format('j ') . $months[(int) $date->format('n') - 1],
+        };
+        $message .= $date->format(' H:i');
+        if ($interval->y) {
+            $message .= $date->format(', Y г.');
+        }
+        return $message;
     }
 }

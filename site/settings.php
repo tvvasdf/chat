@@ -3,6 +3,7 @@
 return [
     'debug' => true,
     'error_page' => 'template/error.php',
+    'timezone' => 'Europe/Moscow',
     'folder' => [
         'public' => 'public',
         'site' => 'site',

@@ -1,7 +1,9 @@
 {
     "require": {
         "catfan/medoo": "^2.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "cboden/ratchet": "^0.4.4",
+      "ext-memcache": "*"
     },
     "autoload": {
         "psr-4": {

@@ -275,6 +275,29 @@ class Lobby
         return $result;
     }
 
+    public static function getSocketData(): array
+    {
+        $result = self::$db->select(
+            self::TABLE_NAME,
+            [
+                'id',
+                'serialized_users_id',
+                'serialized_admins_id',
+                'serialized_invited_id',
+                'serialized_banned_id'
+            ]
+        );
+
+        foreach ($result as $key => $item) {
+            $result[$item['id']]['users_id'] = unserialize($item['serialized_users_id']);
+            $result[$item['id']]['admins_id'] = unserialize($item['serialized_admins_id']);
+            $result[$item['id']]['invited_id'] = unserialize($item['serialized_invited_id']);
+            $result[$item['id']]['banned_id'] = unserialize($item['serialized_banned_id']);
+            unset($result[$key]);
+        }
+        return $result;
+    }
+
     public static function getLastError(): string
     {
         return self::$lastError;

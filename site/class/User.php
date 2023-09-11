@@ -42,7 +42,6 @@ class User
 
         if (!$result) {
             self::$lastError = 'Такого пользователя не существует';
-            return;
         } else {
             $result = $result[array_key_first($result)];
             $this->userData = [
@@ -123,7 +122,6 @@ class User
         if ($data && password_verify($password, $data['password_hash'])) {
             $_SESSION['user'] = [
                 'login' => $login,
-//                'password' => $password
             ];
             return true;
         } else {
