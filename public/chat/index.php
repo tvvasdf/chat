@@ -1,10 +1,10 @@
 <?php
 
+global $user;
+
 if (!User::authorized()) {
     Main::redirect('/auth/');
 }
-
-global $user;
 
 $lobbies = Lobby::getUserLobbies($user);
 

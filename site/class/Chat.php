@@ -22,9 +22,9 @@ class Chat implements MessageComponentInterface {
         foreach ($messages as $msg) {
             $this->messages[$msg['lobby_id']][] = $msg;
         }
-        echo '<pre>';
-        var_dump($_COOKIE['PHPSESSID']);
-        echo '</pre>';exit;
+//        echo '<pre>';
+//        var_dump($_COOKIE['PHPSESSID']);
+//        echo '</pre>';exit;
 
     }
 
@@ -32,15 +32,14 @@ class Chat implements MessageComponentInterface {
     {
         //check user and then
         //foreach user lobbies as lobby => attach
-        $this->connections->attach($conn->lobbyId, $conn->resourceId);
+//        $this->connections->attach($conn->lobbyId, $conn->resourceId);
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
         echo '<pre>';
-        var_dump($from);
         var_dump($msg);
-        echo '</pre>';
+        echo '</pre>';exit;
     }
 
     public function onClose(ConnectionInterface $conn)

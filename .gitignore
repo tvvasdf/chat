@@ -2,6 +2,7 @@
 /install_cms/
 /public/a/
 composer.phar
+composer.lock
 /.idea/
 /pma/
 

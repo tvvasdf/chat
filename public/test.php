@@ -1,3 +1,17 @@
+<?php
+
+if (!User::authorized()) {
+    exit('No AUTH!');
+}
+
+$client = new WebSocket\Client("ws://localhost:8080");
+$client->text(json_encode([]));
+//echo $client->receive();
+$client->close();
+
+global $user;
+?>
+
 <script>
     const socket = new WebSocket('ws://localhost:8080')
     socket.onmessage = function (data) {

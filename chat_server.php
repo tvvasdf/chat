@@ -4,16 +4,13 @@ if (!$argc) {
     echo 'Запускать только с командной строки';
 }
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
-require __DIR__ . '/../site/init.php';
+require __DIR__ . '/site/init.php';
 
 use Ratchet\Http\HttpServer;
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
-
 
 try {
     $ws = new WsServer(new Chat);
@@ -33,4 +30,3 @@ try {
         $server->loop->stop();
     }
 }
-

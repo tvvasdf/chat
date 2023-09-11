@@ -3,7 +3,9 @@
         "catfan/medoo": "^2.1",
         "ext-json": "*",
         "cboden/ratchet": "^0.4.4",
-      "ext-memcache": "*"
+        "ext-curl": "*",
+        "ext-sockets": "*",
+        "textalk/websocket": "^1.5"
     },
     "autoload": {
         "psr-4": {
