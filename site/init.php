@@ -1,16 +1,12 @@
 <?php
 
-if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php')) {
+if (!$argc) {
     require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 }
 
 $settings = require_once 'settings.php';
 
-date_default_timezone_set($settings['timezone']);
-
 $db = new Medoo\Medoo($settings['db_data']);
-
-session_start();
 
 Main::init($settings);
 User::$db = $db;

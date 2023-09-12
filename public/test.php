@@ -5,7 +5,9 @@ if (!User::authorized()) {
 }
 
 $client = new WebSocket\Client("ws://localhost:8080");
-$client->text(json_encode([]));
+$client->text(json_encode([
+    'session_id' => session_id()
+]));
 //echo $client->receive();
 $client->close();
 

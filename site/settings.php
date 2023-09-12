@@ -1,9 +1,11 @@
 <?php
 
+//todo рефакторинг
 return [
     'debug' => true,
     'error_page' => 'template/error.php',
     'timezone' => 'Europe/Moscow',
+    'session_path' => '/data/sessions/',
     'folder' => [
         'public' => 'public',
         'site' => 'site',

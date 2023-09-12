@@ -15,16 +15,33 @@ class Main
 
     public static function init($settings): void
     {
+        global $argc;
+
         if ($settings['debug'] === true) {
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);
             error_reporting(E_ALL);
         }
+
         self::$publicFolder = $settings['folder']['public'];
         self::$templateFolder = $settings['folder']['template'];
         self::$dataFolder = $settings['folder']['data'];
         self::$pathError = $settings['error_page'];
 
+        if (isset($settings['session_path']) && !$argc) {
+            if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $settings['session_path'])) {
+                mkdir($_SERVER['DOCUMENT_ROOT'] . $settings['session_path']);
+            }
+            session_save_path($_SERVER['DOCUMENT_ROOT'] . $settings['session_path']);
+        }
+
+        if (isset($settings['timezone'])) {
+            date_default_timezone_set($settings['timezone']);
+        }
+
+        if (!$argc) {
+            session_start();
+        }
     }
 
     public static function showError(int $status): void
